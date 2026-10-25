@@ -1,3 +1,18 @@
+
+/* Product links must do a complete document load so the offline controls initialize. */
+(function(){'use strict';
+window.addEventListener('click',function(event){
+ if(event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+ const anchor=event.target.closest&&event.target.closest('a[href]');if(!anchor||anchor.hasAttribute('download')||anchor.target==='_blank')return;
+ let u;try{u=new URL(anchor.href,location.href)}catch(_){return}
+ if(u.origin!==location.origin)return;
+ if(!/\/(?:nl\/)?products\/[^/]+\.html$/i.test(u.pathname))return;
+ if(u.href===location.href)return;
+ event.preventDefault();event.stopImmediatePropagation();
+ window.location.assign(u.href);
+},true);
+})();
+
 (function(){
 'use strict';
 const base='/peptidekoning/peptidekoning.to/';
