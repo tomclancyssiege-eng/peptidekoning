@@ -47,49 +47,55 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  window.addEventListener('load',reveal);
 })();
 
-/* Unified offline catalog: sort/filter across all archived product pages. */
+/* Shop category separation and one pagination control; preserves product-page cart fixes. */
 (function(){'use strict';
 const BASE='/peptidekoning/peptidekoning.to/';
-const CATS={'all':'all','peptides':'peptides','nasal sprays':'nasal sprays','topicals':'topicals','pens':'pens','research supplies':'research supplies','bundles':'bundles'};
-const pageRoutes={'all':'products.html','peptides':'products3d6b.html','nasal sprays':'products59fa.html','topicals':'products9ec1.html','pens':'products23b0.html','research supplies':'productsaa38.html','bundles':'bundles.html'};
-function label(s){return (s||'').trim().toLowerCase().replace(/\s+/g,' ')}
+const ROUTES={'all':'products.html','peptides':'products6d27.html','nasal sprays':'products59fa.html','topicals':'products9ec1.html','pens':'products23b0.html','research supplies':'productsaa38.html','bundles':'bundles.html'};
+const names={'all':'ALL','peptides':'PEPTIDES','nasal sprays':'NASAL SPRAYS','topicals':'TOPICALS','pens':'PENS','research supplies':'RESEARCH SUPPLIES','bundles':'BUNDLES'};
+const norm=s=>(s||'').trim().replace(/\s+/g,' ').toUpperCase();
 function init(){
- const grid=document.querySelector('.products-grid > div');if(!grid)return;
+ const grid=document.querySelector('.products-grid > div'); if(!grid)return;
+ const path=location.pathname.split('/').pop();
+ let category=Object.keys(ROUTES).find(k=>ROUTES[k]===path)||'all';
+ // Some archived Peptides pages have alternate filenames.
+ if(/^products(?:3d6b|6d27)\.html$/.test(path))category='peptides';
  const search=document.querySelector('input[placeholder*="Search products"],input[placeholder*="Zoek producten"]');
  const sort=document.querySelector('select#sort');
- const params=new URLSearchParams(location.search);
- const path=location.pathname.split('/').pop();
- let category=Object.keys(pageRoutes).find(k=>pageRoutes[k]===path)||'all';
- if(path==='products3d6b.html')category='peptides';
- let page=1, perPage=12, data=[];
- const pagination=document.createElement('nav');pagination.id='pk-pagination';pagination.style.cssText='display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;padding:25px;color:#eee';
- grid.parentElement.appendChild(pagination);
- const error=document.createElement('p');error.style.cssText='text-align:center;color:#ddd;padding:16px';grid.parentElement.appendChild(error);
- function setCategory(c){if(c==='bundles'||['pens','nasal sprays','topicals','research supplies'].includes(c)){location.assign(BASE+pageRoutes[c]);return;}category=c;page=1;search&&(search.value='');render();history.replaceState(null,'',BASE+(pageRoutes[c]||'products.html'));}
+ let page=1, data=[]; const perPage=12;
+ const style=document.createElement('style');style.textContent='.products-pagination{display:none!important}#pk-shop-pages{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:36px 0}#pk-shop-pages button{padding:10px 15px;border-radius:3px;background:#e5c646;color:#000}#pk-shop-pages button:disabled{opacity:.55;cursor:default}';document.head.appendChild(style);
+ const nav=document.createElement('nav');nav.id='pk-shop-pages';nav.setAttribute('aria-label','Product pages');grid.parentElement.appendChild(nav);
+ const msg=document.createElement('p');msg.style.cssText='text-align:center;padding:20px;color:#ddd';grid.parentElement.appendChild(msg);
  function render(){
-  if(!data.length)return;
-  let q=label(search?.value);let filtered=data.filter(x=>(category==='all'||x.category===category)&&(!q||label(x.name).includes(q)));
-  let mode=sort?.value||'popularity-desc';
-  if(mode==='price-asc')filtered.sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
-  if(mode==='price-desc')filtered.sort((a,b)=>(b.price??-Infinity)-(a.price??-Infinity));
-  if(mode==='title-asc')filtered.sort((a,b)=>a.name.localeCompare(b.name));
-  if(mode==='title-desc')filtered.sort((a,b)=>b.name.localeCompare(a.name));
-  const count=Math.max(1,Math.ceil(filtered.length/perPage));page=Math.max(1,Math.min(page,count));
-  grid.innerHTML=filtered.slice((page-1)*perPage,page*perPage).map(x=>x.html).join('');
-  error.textContent=filtered.length?'':'Geen producten gevonden / No products found';
-  pagination.innerHTML='';
-  function btn(txt,p,disabled){let b=document.createElement('button');b.textContent=txt;b.disabled=disabled;b.style.cssText='background:#e5c541;color:#151515;padding:8px 13px;border-radius:3px;cursor:pointer;opacity:'+(disabled?'.4':'1');b.addEventListener('click',()=>{page=p;render();grid.scrollIntoView({block:'start',behavior:'smooth'});});pagination.appendChild(b)}
-  if(count>1){btn('‹',page-1,page===1);for(let i=1;i<=count;i++)btn(String(i),i,i===page);btn('›',page+1,page===count)}
-  document.querySelectorAll('button').forEach(b=>{const c=CATS[label(b.textContent)];if(!c)return;b.setAttribute('aria-pressed',String(c===category));});
+  if(!data.length){grid.replaceChildren();msg.textContent='Geen producten beschikbaar';nav.replaceChildren();return}
+  const q=norm(search&&search.value);let items=data.filter(x=>(category==='all'||x.category===category)&&(!q||norm(x.name).includes(q)));
+  const order=sort&&sort.value;
+  if(order==='price-asc')items.sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
+  else if(order==='price-desc')items.sort((a,b)=>(b.price??-Infinity)-(a.price??-Infinity));
+  else if(order==='title-asc')items.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(order==='title-desc')items.sort((a,b)=>b.name.localeCompare(a.name));
+  const pages=Math.ceil(items.length/perPage);page=Math.min(Math.max(1,page),Math.max(1,pages));
+  grid.innerHTML=items.slice((page-1)*perPage,page*perPage).map(x=>x.html).join('');
+  msg.textContent=items.length?'':'Geen producten gevonden / No products found';
+  nav.replaceChildren();
+  function button(label,target,disabled){const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=disabled;b.addEventListener('click',()=>{page=target;render();grid.scrollIntoView({behavior:'smooth',block:'start'})});nav.appendChild(b)}
+  if(pages>1){button('‹',page-1,page===1);for(let i=1;i<=pages;i++)button(String(i),i,i===page);button('›',page+1,page===pages)}
+  document.querySelectorAll('button').forEach(b=>{const key=Object.keys(names).find(k=>names[k]===norm(b.textContent));if(key)b.setAttribute('aria-pressed',String(key===category))});
  }
- search?.addEventListener('input',()=>{page=1;render()});sort?.addEventListener('change',()=>{page=1;render()});
- // Capture top-level category controls before broken React handlers run.
- document.addEventListener('click',function(e){let b=e.target.closest('button');if(!b)return;const c=CATS[label(b.textContent)];if(!c)return;
- const parent=b.parentElement;if(!parent)return;const siblings=[...parent.children].filter(x=>x.tagName==='BUTTON');
- if(siblings.length<5||!siblings.some(x=>label(x.textContent)==='research supplies'))return;
- e.preventDefault();e.stopImmediatePropagation();setCategory(c);
+ function changeCategory(c){
+  if(c==='bundles'){location.assign(BASE+'bundles.html');return}
+  category=c;page=1;if(search)search.value='';
+  // Full navigation gives the proper original category title and highlighted tab.
+  location.assign(BASE+ROUTES[c]);
+ }
+ document.addEventListener('click',function(e){const b=e.target.closest&&e.target.closest('button');if(!b)return;const key=Object.keys(names).find(k=>names[k]===norm(b.textContent));if(!key)return;
+  const siblings=b.parentElement&&[...b.parentElement.children].filter(x=>x.tagName==='BUTTON');
+  if(!siblings||siblings.length<5||!siblings.some(x=>norm(x.textContent)==='RESEARCH SUPPLIES'))return;
+  e.preventDefault();e.stopImmediatePropagation();if(key!==category)changeCategory(key);
  },true);
- fetch(BASE+'offline-catalog.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(items=>{data=items;render()}).catch(err=>{error.textContent='Productcatalogus kan niet worden geladen: '+err.message;console.error(err)});
+ search&&search.addEventListener('input',()=>{page=1;render()});
+ sort&&sort.addEventListener('change',()=>{page=1;render()});
+ fetch(BASE+'offline-catalog.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(x=>{data=x;render()}).catch(e=>{msg.textContent='Catalogus kon niet worden geladen: '+e.message;console.error('Shop catalog',e)});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
+
