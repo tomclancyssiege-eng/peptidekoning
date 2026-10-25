@@ -12,3 +12,22 @@ document.addEventListener('click',function(e){const a=e.target.closest&&e.target
 function imageFix(){document.querySelectorAll('img').forEach(function(im){const raw=im.getAttribute('src')||'';if(raw.includes('/_next/')&&raw.includes('?url=')){im.setAttribute('src',raw.split('?')[0]);}if(im.hasAttribute('srcset')){const ss=im.getAttribute('srcset');if(ss.includes('?url=')){im.setAttribute('srcset',ss.replace(/\?url=[^\s,]*/g,''));}}});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',imageFix);else imageFix();
 })();
+
+/* Recover product listings hidden by server-rendered reveal animations. */
+(function(){
+ function reveal(){
+  document.querySelectorAll('.products-grid [style]').forEach(function(el){
+   var st=el.style;
+   if(st.opacity==='0' && (st.transform||st.transitionDelay)){
+    st.setProperty('opacity','1','important');
+    st.setProperty('transform','none','important');
+    st.setProperty('visibility','visible','important');
+   }
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal);
+ else reveal();
+ var n=0;var observer=new MutationObserver(function(){if(n++<150)reveal();else observer.disconnect()});
+ observer.observe(document.documentElement,{childList:true,subtree:true});
+ window.addEventListener('load',reveal);
+})();
