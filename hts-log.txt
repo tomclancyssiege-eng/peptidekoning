@@ -1,0 +1,23 @@
+HTTrack3.50-5 launched on Sun, 25 Oct 2026 15:15:43 at https://peptidekoning.to/ +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar
+(winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2%f#f -F "Mozilla/5.0 (compatible; HTTrack; +https://www.httrack.com/)" -%F "<!-- Mirrored from {url} by HTTrack Website Copier/3.x [XR&CO], {date} -->" -%l "en, *" https://peptidekoning.to/ -O1 "C:\Users\Gebruiker\Documents\peptidekoning" +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+15:16:30	Warning: 	Permanent Redirect for https://peptidekoning.to/nl/
+15:16:30	Warning: 	File has moved from https://peptidekoning.to/nl/ to /nl
+15:25:50	Warning: 	Link https://peptidekoning.to/login not scanned (follow robots meta tag)
+15:26:20	Warning: 	Permanent Redirect for https://peptidekoning.to/ROOT/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@opentelemetry+api@1.9.1_babel-plugin-react-compiler@1.0_2c2cf21e4fca4519ea4249790ba46218/node_modules/next/dist/compiled/process/
+15:26:20	Warning: 	File has moved from https://peptidekoning.to/ROOT/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@opentelemetry+api@1.9.1_babel-plugin-react-compiler@1.0_2c2cf21e4fca4519ea4249790ba46218/node_modules/next/dist/compiled/process/ to /ROOT/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@opentelemetry+api@1.9.1_babel-plugin-react-compiler@1.0_2c2cf21e4fca4519ea4249790ba46218/node_modules/next/dist/compiled/process
+15:26:20	Warning: 	Permanent Redirect for https://peptidekoning.to/_next/
+15:26:20	Warning: 	File has moved from https://peptidekoning.to/_next/ to /_next
+15:26:39	Error: 	"Not Found" (404) at link https://peptidekoning.to/images/shop-hero.webp (from https://peptidekoning.to/products)
+15:33:42	Error: 	"Not Found" (404) at link https://peptidekoning.to/cdn-cgi/l/email-protection (from https://peptidekoning.to/returns)
+15:33:51	Warning: 	Link https://peptidekoning.to/nl/login not scanned (follow robots meta tag)
+15:36:30	Warning: 	Permanent Redirect for https://peptidekoning.to/ROOT/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@opentelemetry+api@1.9.1_babel-plugin-react-compiler@1.0_2c2cf21e4fca4519ea4249790ba46218/node_modules/next/dist/compiled/buffer/
+15:36:30	Warning: 	File has moved from https://peptidekoning.to/ROOT/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@opentelemetry+api@1.9.1_babel-plugin-react-compiler@1.0_2c2cf21e4fca4519ea4249790ba46218/node_modules/next/dist/compiled/buffer/ to /ROOT/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@opentelemetry+api@1.9.1_babel-plugin-react-compiler@1.0_2c2cf21e4fca4519ea4249790ba46218/node_modules/next/dist/compiled/buffer
+
+HTTrack Website Copier/3.50-5 mirror complete in 22 minutes 12 seconds : 2074 links scanned, 2067 files written (264497796 bytes overall) [210598045 bytes received at 158106 bytes/sec], 69171419 bytes transferred using HTTP compression in 317 files, ratio 15%, 45.7 requests per connection
+(2 errors, 10 warnings, 0 messages)
